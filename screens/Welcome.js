@@ -1,8 +1,11 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const WelcomeScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <ScrollView style={styles.container}>
       {/* Jumbotron */}
@@ -45,7 +48,7 @@ const WelcomeScreen = () => {
       <View style={styles.ctaContainer}>
         <Text style={styles.ctaTitle}>Prêt à découvrir votre solution santé ?</Text>
         <Text style={styles.ctaText}>Inscrivez-vous dès maintenant et rejoignez les milliers d'utilisateurs qui ont optimisé leur couverture santé avec nous.</Text>
-        <TouchableOpacity style={styles.ctaButton}>
+       <TouchableOpacity style={styles.ctaButton} onPress={() => navigation.navigate('Register')}>
           <Text style={styles.ctaButtonText}>Inscription</Text>
         </TouchableOpacity>
       </View>

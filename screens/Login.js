@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import AsyncStorage  from '@react-native-async-storage/async-storage';
+import { clickProps } from 'react-native-web/dist/cjs/modules/forwardedProps';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [ userId,setUserId ] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const ip="10.7.16.102";
+  const apiURL = `http://${ip}:8888/api`;
 
   const storeUserId = async (userId) => {
     try {
       await AsyncStorage.setItem('userId', userId.toString());
+      const storedUserId = await AsyncStorage.getItem('userId');
     } catch (error) {
       console.error('Erreur lors du stockage de l\'ID de l\'utilisateur:', error);
     }
@@ -19,7 +22,7 @@ const LoginScreen = ({ navigation }) => {
     
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://172.20.10.2:8888/api/login', {
+      const response = await fetch(`${apiURL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,8 +34,6 @@ const LoginScreen = ({ navigation }) => {
       });
       const data = await response.json();
       
-      setUserId(data.id); 
-
       if (response.status === 200) {
         // Vérifier si l'utilisateur est un administrateur
         if (data.is_admin) {
@@ -40,7 +41,7 @@ const LoginScreen = ({ navigation }) => {
           navigation.navigate('AdminDashboard');
         } else {
           // Naviguer vers le tableau de bord utilisateur standard
-          storeUserId(userId);
+          storeUserId(data.id);
           navigation.navigate('UserDashboard');
         }
       } else {

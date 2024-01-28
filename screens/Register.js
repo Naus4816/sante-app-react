@@ -7,6 +7,8 @@ const RegisterScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const ip="10.7.16.102";
+  const apiURL = `http://${ip}:8888/api`;
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -15,7 +17,7 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://172.20.10.2:8888/api/register', {
+      const response = await fetch(`${apiURL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

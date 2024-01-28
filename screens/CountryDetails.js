@@ -17,12 +17,12 @@ const CountryDetails = ({ route }) => {
 
   const [departureCountries, setDepartureCountries] = useState([]);
 
-  const apiURL = "http://172.20.10.2:8888/api";
+  const ip="10.7.16.102";
+  const apiURL = `http://${ip}:8888/api`;
 
   const getStoredUserId = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
-      console.log(userId); // Affiche l'ID de l'utilisateur dans la console
       return userId;
     } catch (error) {
       console.error('Erreur lors de la récupération de l\'ID de l\'utilisateur:', error);
@@ -114,18 +114,16 @@ const CountryDetails = ({ route }) => {
   useEffect(() => {
     getActesSante();
     getCountriesByName();
-    getStoredUserId();
   }, []);
 
   const addTrajet = async (paysId, selectedCountryId, carbonFootprint) => {
     try {
-      const userId = await getStoredUserId(); // Récupérer l'ID de l'utilisateur depuis AsyncStorage
-  
-      // Préparer les données à envoyer au serveur
+      const userId = await getStoredUserId();
+      
       const requestData = {
         user_id: userId,
         pays_id: paysId,
-        pays_id2: selectedCountryId, // Remarquez que vous avez deux champs 'pays_id', vous devrez peut-être ajuster cela selon vos besoins
+        pays_id2: selectedCountryId, 
         empreinte_co2: carbonFootprint,
       };
   
@@ -138,9 +136,7 @@ const CountryDetails = ({ route }) => {
       });
   
       if (response.status === 201) {
-        const responseData = await response.json();
-        console.log('Déplacement créé avec succès:', responseData.deplacement);
-        return responseData.deplacement;
+        alert('Déplacement enregistré avec succès!');
       } else {
         console.error('Erreur lors de la création du déplacement:', response.status);
         return null;
@@ -166,7 +162,6 @@ const CountryDetails = ({ route }) => {
         if (response.ok) {
           const data = await response.json();
           if (data.recommandation) {
-            console.log('Recommandation créée avec succès:', data.recommandation);
     
             setNewRecommendation('');
     
@@ -179,7 +174,7 @@ const CountryDetails = ({ route }) => {
       } catch (error) {
         console.error('Erreur lors de la création de la recommandation:', error);
       }
-      getRecommandations(paysIdValue);
+      getRecommandations(paysId);
     };  
     const handleDeleteRecommendation = async (recommendationId) => {
       try {
@@ -274,12 +269,10 @@ const CountryDetails = ({ route }) => {
           const distance = calculateDistance(departureLoc.latitude, departureLoc.longitude, selectedLoc.latitude, selectedLoc.longitude);
           const carbonFootprint = calculateCarbonFootprint(distance);
           
-          console.log(`La distance entre ${departureCountry} et ${selectedCountry}: ${distance.toFixed(2)} km`);
-          console.log(`L'empreinte carbone du voyage sera d'environ: ${carbonFootprint.toFixed(2)} kgCO2e/km/personne`);
           setDistance(distance.toFixed(2));
           setCarbonFootprint(carbonFootprint.toFixed(2));      
         } else {
-          console.log("erreur");
+          console.error("Erreur de calcul des émissions de carbone lors du trajet");
         }
       }
     
@@ -348,10 +341,12 @@ const CountryDetails = ({ route }) => {
                 </ScrollView>
               </View>
             </Modal>
-
+            
+            {selectedCountry !== "Sélectionnez votre pays de départ" && (
             <TouchableOpacity style={styles.button} onPress={() => handleEstimateCarbonFootprint(countryName, selectedCountry)}>
               <Text style={styles.buttonText}>Calculer l'empreinte carbone</Text>
             </TouchableOpacity>
+            )}
             <View>
             {distance !== null && carbonFootprint !== null && (
                 <View>
