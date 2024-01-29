@@ -8,7 +8,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [ userId,setUserId ] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const ip="10.7.16.102";
+  const ip = "192.168.1.36";
   const apiURL = `http://${ip}:8888/api`;
 
   const storeUserId = async (userId) => {

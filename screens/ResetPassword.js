@@ -5,6 +5,8 @@ const ResetPasswordScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
   const handleResetPassword = () => {
     // Logique de réinitialisation du mot de passe

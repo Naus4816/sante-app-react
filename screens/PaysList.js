@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
 
-const PaysListScreen = () => {
-  const navigation = useNavigation();
+const PaysListScreen = ({ navigation }) => {
+  const windowWidth = Dimensions.get('window').width;
   const [pays, setPays] = useState([]);
-  const ip="10.7.16.102";
+  const ip = "192.168.1.36";
   const apiURL = `http://${ip}:8888/api`;
 
   const getPays = async () => {
@@ -17,17 +16,17 @@ const PaysListScreen = () => {
       const data = await response.json();
       setPays(data);
     } catch (error) {
-      console.error('Erreur lors de la récupération des données :', error);
-      throw error; 
+      console.error('Erreur lors de la récupération des données de pays :', error);
+      throw error;
     }
   };
-  
+
   const navigateToAddPays = () => {
-    navigation.navigate('AddPays'); // Assurez-vous que 'AddPays' est bien défini dans votre stack navigator
+    navigation.navigate('AddPays');
   };
 
   const handleEdit = (id) => {
-    navigation.navigate('EditPays', { paysId: id }); // Assurez-vous que 'EditPays' est bien défini dans votre stack navigator
+    navigation.navigate('EditPays', { paysId: id });
   };
 
   const handleDelete = async (id) => {
@@ -35,43 +34,46 @@ const PaysListScreen = () => {
       const response = await fetch(`${apiURL}/pays/${id}`, {
         method: 'DELETE',
       });
-
+  
       if (response.ok) {
-        // Supprimer l'acte de santé avec l'ID spécifié de l'état healthActs
+        // Supprimer le pays avec l'ID spécifié de l'état pays
         setPays((prevPays) => prevPays.filter((pays) => pays.id !== id));
-        console.log('Acte de Santé supprimé avec succès.');
+        console.log('Pays supprimé avec succès.');
       } else {
-        console.error('Échec de la suppression de l\'acte de Santé.');
+        console.error('Échec de la suppression du pays.');
       }
     } catch (error) {
-      console.error('Erreur lors de la suppression de l\'acte de Santé :', error);
+      console.error('Erreur lors de la suppression du pays :', error);
     }
-  };
-  
+  };  
+
+  const isSmallDevice = windowWidth < 768;
+
   useEffect(() => {
     getPays();
   }, []);
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Pays</Text>
-        <TouchableOpacity style={styles.addButton} onPress={navigateToAddPays}>
-          <Text style={styles.addButtonText}>Ajouter un Pays</Text>
+      <View style={[styles.header, isSmallDevice && styles.smallHeader]}>
+        <Text style={[styles.headerText, isSmallDevice && styles.smallHeaderText]}>Liste des pays</Text>
+        <TouchableOpacity style={[styles.addButton, isSmallDevice && styles.smallAddButton]} onPress={navigateToAddPays}>
+          <Text style={[styles.addButtonText, isSmallDevice && styles.smallAddButtonText]}>Ajouter un pays</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        {pays.map(pay => (
-          <View key={pay.id} style={styles.card}>
+        {pays.map((pays) => (
+          <View key={pays.id} style={styles.card}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardHeaderText}>{pay.nom}</Text>
+              <Text style={styles.cardHeaderText}>Pays ID: {pays.id}</Text>
             </View>
             <View style={styles.cardBody}>
-              <Text>Indice CO2: {pay.indiceCO2}</Text>
+              <Text>Nom: {pays.nom}</Text>
+              <Text>Nom anglais: {pays.nom_anglais}</Text>
               <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionButton} onPress={() => handleEdit(pay.id)}>
+                <TouchableOpacity style={styles.actionButton} onPress={() => handleEdit(pays.id)}>
                   <Text style={styles.actionButtonText}>Modifier</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, styles.actionButtonDanger]} onPress={() => handleDelete(pay.id)}>
+                <TouchableOpacity style={[styles.actionButton, styles.actionButtonDanger]} onPress={() => handleDelete(pays.id)}>
                   <Text style={styles.actionButtonText}>Supprimer</Text>
                 </TouchableOpacity>
               </View>
@@ -84,72 +86,87 @@ const PaysListScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#f8f9fa',
-    },
-    header: {
-      padding: 20,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    headerText: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#333',
-    },
-    addButton: {
-      backgroundColor: '#4CAF50',
-      padding: 10,
-      borderRadius: 5,
-    },
-    addButtonText: {
-      color: 'white',
-      fontSize: 16,
-    },
-    content: {
-      paddingHorizontal: 20,
-    },
-    card: {
-      backgroundColor: 'white',
-      borderRadius: 20,
-      marginBottom: 20,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 6,
-      overflow: 'hidden',
-    },
-    cardHeader: {
-      backgroundColor: '#6AC8FF',
-      padding: 20,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-    },
-    cardHeaderText: {
-      color: 'white',
-      fontSize: 18,
-    },
-    cardBody: {
-      padding: 20,
-    },
-    actions: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-    },
-    actionButton: {
-      backgroundColor: '#3490dc',
-      padding: 10,
-      borderRadius: 5,
-      marginRight: 10,
-    },
-    actionButtonText: {
-      color: 'white',
-    },
-    actionButtonDanger: {
-      backgroundColor: '#dc3545',
-    },
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  header: {
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  smallHeader: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  smallHeaderText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  addButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+  },
+  smallAddButton: {
+    padding: 8,
+    alignSelf: 'flex-start',
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  smallAddButtonText: {
+    fontSize: 14,
+  },
+  content: {
+    paddingHorizontal: 20,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    overflow: 'hidden',
+  },
+  cardHeader: {
+    backgroundColor: '#6AC8FF',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  cardHeaderText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  cardBody: {
+    padding: 20,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  actionButton: {
+    backgroundColor: '#3490dc',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  actionButtonText: {
+    color: 'white',
+  },
+  actionButtonDanger: {
+    backgroundColor: '#dc3545',
+  },
+});
 
 export default PaysListScreen;

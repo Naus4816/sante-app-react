@@ -1,112 +1,116 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
-const EditActesSanteScreen = ({ route }) => {
-  const navigation = useNavigation();
-  const { acteSanteId } = route.params; // Assurez-vous de passer 'acteSanteId' lors de la navigation vers cet écran
+const EditActeSantesScreen = ({ route, navigation }) => {
+  const acteSanteId = route.params?.acteSanteId || null;
+  if (!acteSanteId) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Aucun acte de santé trouvé pour modification.</Text>
+      </View>
+    );
+  }
 
-  // État initial pour le formulaire
-  const [nom, setNom] = useState('');
-  const [description, setDescription] = useState('');
-  const [prix, setPrix] = useState('');
-  const [paysId, setPaysId] = useState('');
+  // État initial pour le déplacement
+  const [actesante, setActeSante] = useState({
+    nom: '',
+    description: '',
+    prix: '',
+    pays_id: ''
+  });
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
-  const getActesSante = async () => {
+  const getActeSante = async () => {
     try {
-      const response = await fetch(`${apiURL}/actesante`); 
+      const response = await fetch(`${apiURL}/actesantes/${acteSanteId}`);
       if (!response.ok) {
         throw new Error('La requête a échoué');
       }
       const data = await response.json();
-      setHealthActs(data);
+      setActeSante({
+        nom: data.nom || '',
+        description: data.description || '',
+        prix: data.prix || '',
+        pays_id: data.pays_id || '',
+      });
     } catch (error) {
       console.error('Erreur lors de la récupération des données :', error);
-      throw error; 
+    }
+  };
+
+  const handleInputChange = (name, value) => {
+    setActeSante(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch(`${apiURL}/actesante/${acteSanteId}`, {
+        method: 'PATCH', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(actesante),
+      });
+
+      if (response.ok) {
+        console.log('Acte de santé mis à jour avec succès.');
+        navigation.goBack();
+      } else {
+        console.error('Échec de la mise à jour de l\acte de santé.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de l\acte de santé :', error);
     }
   };
 
   useEffect(() => {
-    getActesSante();
-  }, []);
+    getActeSante();
+  }, [acteSanteId]);
 
-  const handleUpdate = async () => {
-    try {
-      const updatedActe = {
-        nom: nom, // Mettez à jour avec la nouvelle valeur
-        description: description, // Mettez à jour avec la nouvelle valeur
-        prix: prix, // Mettez à jour avec la nouvelle valeur
-        pays_id: paysId, // Mettez à jour avec la nouvelle valeur
-      };
-  
-      const response = await fetch(`${apiURL}/actesante/${acteSanteId}`, {
-        method: 'PUT', // ou 'PATCH' en fonction de votre API
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedActe),
-      });
-  
-      if (response.ok) {
-        const responseData = await response.json();
-        // Vous pouvez traiter les données de réponse si nécessaire
-  
-        console.log('Acte de Santé mis à jour avec succès.');
-        navigation.goBack(); // Retour à l'écran précédent après la mise à jour
-      } else {
-        console.error('Échec de la mise à jour de l\'acte de Santé.');
-      }
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour de l\'acte de Santé :', error);
-    }
-  };
-  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Modifier l'Acte de Santé</Text>
+        <Text style={styles.headerText}>Modifier l'acte de santé</Text>
       </View>
-      <View style={styles.form}>
-        <Text style={styles.label}>Nom</Text>
-        <TextInput
-          style={styles.input}
-          value={nom}
-          onChangeText={setNom}
-          placeholder="Nom de l'acte de santé"
-        />
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={description}
-          onChangeText={setDescription}
-          placeholder="Description de l'acte de santé"
-          multiline
-        />
-        <Text style={styles.label}>Prix</Text>
-        <TextInput
-          style={styles.input}
-          value={prix.toString()}
-          onChangeText={(text) => setPrix(text)}
-          placeholder="Prix de l'acte de santé"
-          keyboardType="numeric"
-        />
-        <Text style={styles.label}>Pays</Text>
-        <Picker
-          selectedValue={paysId}
-          onValueChange={(itemValue) => setPaysId(itemValue)}
-          style={styles.picker}
-        >
-          {paysList.map((pays) => (
-            <Picker.Item key={pays.id} label={pays.nom} value={pays.id} />
-          ))}
-        </Picker>
-        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-          <Text style={styles.buttonText}>Mettre à jour</Text>
-        </TouchableOpacity>
+      <View style={styles.card}>
+        <View style={styles.cardBody}>
+          <Text style={styles.label}>Nom</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={actesante.nom.toString()}
+            onChangeText={(value) => handleInputChange('nom', value)}
+          />
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={actesante.description.toString()}
+            onChangeText={(value) => handleInputChange('description', value)}
+          />
+          <Text style={styles.label}>Prix</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={actesante.prix.toString()}
+            onChangeText={(value) => handleInputChange('prix', value)}
+            keyboardType="numeric"
+          />
+          <Text style={styles.label}>Pays Id</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={actesante.pays_id.toString()}
+            onChangeText={(value) => handleInputChange('pays_id', value)}
+            keyboardType="numeric"
+          />
+          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+            <Text style={styles.buttonText}>Mettre à jour</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
@@ -124,14 +128,17 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
   },
-  form: {
+  card: {
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 6,
+  },
+  cardBody: {
+    padding: 20,
   },
   label: {
     fontSize: 16,
@@ -145,27 +152,22 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
   },
-  textArea: {
-    minHeight: 100, // Ajustez selon besoin pour la description
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: '#ced4da',
-    borderRadius: 5,
-    marginBottom: 15,
-    // Autres styles pour le picker si nécessaire
-  },
   button: {
     backgroundColor: '#3490dc',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-    marginTop: 20,
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
   },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+  },
 });
 
-export default EditActesSanteScreen;
+export default EditActeSantesScreen;

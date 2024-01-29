@@ -1,77 +1,81 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
 
-const ActesSanteListScreen = () => {
-  const navigation = useNavigation();
-  const [healthActs, setHealthActs] = useState([]);
-  const apiURL = "http://172.20.10.2:8888/api";
+const ActesSanteListScreen = ({ navigation }) => {
+  const windowWidth = Dimensions.get('window').width;
+  const [actesantes, setActeSantes] = useState([]);
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
-  const getActesSante = async () => {
+  const getActeSante = async () => {
     try {
       const response = await fetch(`${apiURL}/actesante`); 
       if (!response.ok) {
         throw new Error('La requête a échoué');
       }
       const data = await response.json();
-      setHealthActs(data);
+      setActeSantes(data);
     } catch (error) {
-      console.error('Erreur lors de la récupération des données :', error);
-      throw error; 
+      console.error('Erreur lors de la récupération des données de l/acte de sante :', error);
+      throw error;
     }
   };
-    
+
   const navigateToAddActeSante = () => {
-    navigation.navigate('AddActesSante'); 
+    navigation.navigate('AddActesSante');
   };
+
   const handleEdit = (id) => {
     navigation.navigate('EditActesSante', { acteSanteId: id });
   };
+
   const handleDelete = async (id) => {
     try {
       const response = await fetch(`${apiURL}/actesante/${id}`, {
         method: 'DELETE',
       });
-
+  
       if (response.ok) {
-        // Supprimer l'acte de santé avec l'ID spécifié de l'état healthActs
-        setHealthActs((prevHealthActs) => prevHealthActs.filter((acte) => acte.id !== id));
-        console.log('Acte de Santé supprimé avec succès.');
+        // Supprimer l'acte de santé avec l'ID spécifié de l'état actesantes
+        setActeSantes((prevActeSantes) => prevActeSantes.filter((actesante) => actesante.id !== id));
+        console.log('Acte de santé supprimé avec succès.');
       } else {
-        console.error('Échec de la suppression de l\'acte de Santé.');
+        console.error('Échec de la suppression de l\acte de sante.');
       }
     } catch (error) {
-      console.error('Erreur lors de la suppression de l\'acte de Santé :', error);
+      console.error('Erreur lors de la suppression de l\acte de sante :', error);
     }
-  };
+  };  
 
+  const isSmallDevice = windowWidth < 768;
 
   useEffect(() => {
-    getActesSante();
+    getActeSante();
   }, []);
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Actes de Santé</Text>
-        <TouchableOpacity style={styles.addButton} onPress={navigateToAddActeSante}>
-          <Text style={styles.addButtonText}>Ajouter un acte de santé</Text>
+      <View style={[styles.header, isSmallDevice && styles.smallHeader]}>
+        <Text style={[styles.headerText, isSmallDevice && styles.smallHeaderText]}>Liste des Actes de santé</Text>
+        <TouchableOpacity style={[styles.addButton, isSmallDevice && styles.smallAddButton]} onPress={navigateToAddActeSante}>
+          <Text style={[styles.addButtonText, isSmallDevice && styles.smallAddButtonText]}>Ajouter un acte de santé</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        {healthActs.map((acte) => (
-          <View key={acte.id} style={styles.card}>
+        {actesantes.map((actesante) => (
+          <View key={actesante.id} style={styles.card}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardHeaderText}>{acte.nom}</Text>
+              <Text style={styles.cardHeaderText}>Acte de santé ID: {actesante.id}</Text>
             </View>
             <View style={styles.cardBody}>
-              <Text>Description: {acte.description}</Text>
-              <Text>Prix: {acte.prix}€</Text>
-              <Text>Pays: {acte.pays}</Text>
+              <Text>Nom: {actesante.nom}</Text>
+              <Text>Description: {actesante.description}</Text>
+              <Text>Prix: {actesante.prix}</Text>
+              <Text>Pays ID: {actesante.pays_id}</Text>
               <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionButton} onPress={() => handleEdit(acte.id)}>
+                <TouchableOpacity style={styles.actionButton} onPress={() => handleEdit(actesante.id)}>
                   <Text style={styles.actionButtonText}>Modifier</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, styles.actionButtonDanger]} onPress={() => handleDelete(acte.id)}>
+                <TouchableOpacity style={[styles.actionButton, styles.actionButtonDanger]} onPress={() => handleDelete(actesante.id)}>
                   <Text style={styles.actionButtonText}>Supprimer</Text>
                 </TouchableOpacity>
               </View>
@@ -90,23 +94,38 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 20,
-    flexDirection: 'row', // Permet d'aligner le titre et le bouton sur la même ligne
-    justifyContent: 'space-between', // Répartit uniformément l'espace
-    alignItems: 'center', // Alignement vertical des éléments
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  smallHeader: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
   },
+  smallHeaderText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
   addButton: {
     backgroundColor: '#4CAF50',
     padding: 10,
     borderRadius: 5,
   },
+  smallAddButton: {
+    padding: 8,
+    alignSelf: 'flex-start',
+  },
   addButtonText: {
     color: 'white',
     fontSize: 16,
+  },
+  smallAddButtonText: {
+    fontSize: 14,
   },
   content: {
     paddingHorizontal: 20,

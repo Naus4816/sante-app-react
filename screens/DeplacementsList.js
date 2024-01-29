@@ -4,7 +4,8 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from
 const DeplacementsListScreen = ({ navigation }) => {
   const windowWidth = Dimensions.get('window').width;
   const [deplacements, setDeplacements] = useState([]);
-  const apiURL = "http://172.20.10.2:8888/api";
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
   const getDeplacements = async () => {
     try {
@@ -66,11 +67,10 @@ const DeplacementsListScreen = ({ navigation }) => {
               <Text style={styles.cardHeaderText}>Déplacement ID: {deplacement.id}</Text>
             </View>
             <View style={styles.cardBody}>
-              <Text>Utilisateur ID: {deplacement.userId}</Text>
-              <Text>Pays ID: {deplacement.paysId}</Text>
-              <Text>Date de Départ: {deplacement.dateDepart}</Text>
-              <Text>Date de Retour: {deplacement.dateRetour}</Text>
-              <Text>Empreinte CO2: {deplacement.empreinteCO2}</Text>
+              <Text>Utilisateur ID: {deplacement.user_id}</Text>
+              <Text>Pays ID: {deplacement.pays_id}</Text>
+              <Text>Pays ID 2: {deplacement.pays_id2}</Text>
+              <Text>Empreinte CO2: {deplacement.empreinte_co2}</Text>
               <View style={styles.actions}>
                 <TouchableOpacity style={styles.actionButton} onPress={() => handleEdit(deplacement.id)}>
                   <Text style={styles.actionButtonText}>Modifier</Text>

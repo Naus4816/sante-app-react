@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
-const AddDeplacementsScreen = () => {
-  const [userId, setUserId] = useState('');
-  const [paysId, setPaysId] = useState('');
-  const [paysId2, setPaysId2] = useState('');
-  const [empreinteCO2, setEmpreinteCO2] = useState('');
+const AddDeplacementsScreen = ({navigation}) => {
+  const [user_id, setUserId] = useState('');
+  const [pays_id, setPaysId] = useState('');
+  const [pays_id2, setPaysId2] = useState('');
+  const [empreinte_co2, setEmpreinteCO2] = useState('');
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
   const handleSave = async () => {
     try {
       const newDeplacement = {
-        userId,
-        paysId,
-        paysId2,
-        empreinteCO2,
+        user_id,
+        pays_id,
+        pays_id2,
+        empreinte_co2,
       };
   
       const response = await fetch(`${apiURL}/deplacement`, {
@@ -25,8 +27,7 @@ const AddDeplacementsScreen = () => {
       });
   
       if (response.ok) {
-        // Vous pouvez traiter les données de réponse si nécessaire
-  
+        navigation.goBack();
         console.log('Déplacement ajouté avec succès.');
       } else {
         console.error('Échec de l\'ajout du déplacement.');
@@ -47,7 +48,7 @@ const AddDeplacementsScreen = () => {
             <Text style={styles.label}>Utilisateur ID</Text>
             <TextInput
               style={styles.input}
-              value={userId}
+              value={user_id}
               onChangeText={setUserId}
               keyboardType="numeric"
               placeholder="ID de l'utilisateur"
@@ -55,7 +56,7 @@ const AddDeplacementsScreen = () => {
             <Text style={styles.label}>Pays de départ</Text>
             <TextInput
               style={styles.input}
-              value={paysId}
+              value={pays_id}
               onChangeText={setPaysId}
               keyboardType="numeric"
               placeholder="ID du pays"
@@ -63,15 +64,15 @@ const AddDeplacementsScreen = () => {
             <Text style={styles.label}>Pays d'arrivée</Text>
             <TextInput
               style={styles.input}
-              value={paysId}
+              value={pays_id2}
               onChangeText={setPaysId2}
               keyboardType="numeric"
-              placeholder="ID du pays"
+              placeholder="ID du pays 2"
             />
             <Text style={styles.label}>Empreinte CO2</Text>
             <TextInput
               style={styles.input}
-              value={empreinteCO2}
+              value={empreinte_co2}
               onChangeText={setEmpreinteCO2}
               keyboardType="numeric"
               placeholder="Empreinte CO2"

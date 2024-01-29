@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
-const AddPaysScreen = () => {
+const AddPaysScreen = ({navigation}) => {
   const [nom, setNom] = useState('');
-  const [nom_anglais, setNom_Anglais] = useState('');
+  const [nom_anglais, setNomAnglais] = useState('');
+
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
   const handleSave = async () => {
     try {
       const newPays = {
         nom,
-        nom_anglais,
+        nom_anglais
       };
   
       const response = await fetch(`${apiURL}/pays`, {
@@ -21,8 +24,7 @@ const AddPaysScreen = () => {
       });
   
       if (response.ok) {
-        // Vous pouvez traiter les données de réponse si nécessaire
-  
+        navigation.goBack();
         console.log('Pays ajouté avec succès.');
       } else {
         console.error('Échec de l\'ajout du pays.');
@@ -31,27 +33,27 @@ const AddPaysScreen = () => {
       console.error('Erreur lors de l\'ajout du pays :', error);
     }
   };
-
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Ajouter un Pays</Text>
+        <Text style={styles.headerText}>Ajouter un Nouveau Pays</Text>
       </View>
       <View style={styles.card}>
         <View style={styles.cardBody}>
           <View style={styles.formGroup}>
-            <Text style={styles.label}>Nom du Pays</Text>
+            <Text style={styles.label}>Nom</Text>
             <TextInput
               style={styles.input}
               value={nom}
               onChangeText={setNom}
               placeholder="Nom du pays"
             />
-            <Text style={styles.label}>Indice CO2</Text>
+            <Text style={styles.label}>Nom en anglais</Text>
             <TextInput
               style={styles.input}
               value={nom_anglais}
-              onChangeText={setNom_Anglais}
+              onChangeText={setNomAnglais}
               placeholder="Nom du pays en anglais"
             />
             <TouchableOpacity style={styles.button} onPress={handleSave}>
@@ -63,36 +65,35 @@ const AddPaysScreen = () => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
     padding: 20,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
+    backgroundColor: '#f8f9fa',
   },
   card: {
-    backgroundColor: 'white',
     borderRadius: 20,
-    padding: 20,
+    backgroundColor: 'white',
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
+    overflow: 'hidden',
+  },
+  cardHeader: {
+    backgroundColor: '#6AC8FF',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  cardHeaderText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   cardBody: {
     padding: 20,
-  },
-  formGroup: {
-    marginBottom: 15,
   },
   label: {
     fontSize: 16,
@@ -105,6 +106,9 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     fontSize: 16,
+  },
+  textArea: {
+    height: 100, // Hauteur ajustée pour la zone de texte
   },
   button: {
     backgroundColor: '#3490dc',

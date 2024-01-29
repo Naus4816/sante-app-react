@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 
 const EmailVerificationScreen = () => {
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
   
   const resendVerificationEmail = async () => {
     try {

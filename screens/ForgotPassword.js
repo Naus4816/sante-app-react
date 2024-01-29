@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Button,  StyleSheet, ScrollVie
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
   const handleForgotPassword = () => {
     // Ici, ajoutez votre logique pour la réinitialisation du mot de passe

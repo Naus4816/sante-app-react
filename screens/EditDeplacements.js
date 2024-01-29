@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
-const EditDeplacementsScreen = ({ route }) => {
-  // Récupérer les données de déplacement passées, ou utiliser un objet vide par défaut
-  const deplacement = route.params?.deplacement || null;
+const EditDeplacementsScreen = ({ route, navigation }) => {
+  const deplacementId = route.params?.deplacementId || null;
 
-  // Si aucun déplacement n'est passé, retourner un message d'erreur
-  if (!deplacement) {
+  if (!deplacementId) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Aucun déplacement trouvé pour modification.</Text>
@@ -14,49 +12,54 @@ const EditDeplacementsScreen = ({ route }) => {
     );
   }
 
-
-  // État initial pour le formulaire
-   const [userId, setUserId] = useState('');
-   const [paysId, setPaysId] = useState('');
-   const [paysId2, setPaysId2] = useState('');
-   const [empreinteCO2, setEmpreinteCO2] = useState('');
+  // État initial pour le déplacement
+  const [deplacement, setDeplacement] = useState({
+    user_id: '',
+    pays_id: '',
+    pays_id2: '',
+    empreinte_co2: ''
+  });
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
   const getDeplacement = async () => {
     try {
-      const response = await fetch(`${apiURL}/deplacement`); 
+      const response = await fetch(`${apiURL}/deplacement/${deplacementId}`);
       if (!response.ok) {
         throw new Error('La requête a échoué');
       }
       const data = await response.json();
-      setTrajet(data);
+      setDeplacement({
+        user_id: data.user_id || '',
+        pays_id: data.pays_id || '',
+        pays_id2: data.pays_id2 || '',
+        empreinte_co2: data.empreinte_co2 || '',
+      });
     } catch (error) {
       console.error('Erreur lors de la récupération des données :', error);
-      throw error; 
     }
+  };
+
+  const handleInputChange = (name, value) => {
+    setDeplacement(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
   const handleUpdate = async () => {
     try {
-      const updatedDeplacement = {
-        userId,
-        paysId,
-        paysId2,
-        empreinteCO2,
-      };
-  
-      const response = await fetch(`${apiURL}/deplacement/${deplacement.id}`, {
-        method: 'PUT', // ou 'PATCH' en fonction de votre API
+      const response = await fetch(`${apiURL}/deplacement/${deplacementId}`, {
+        method: 'PATCH', 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedDeplacement),
+        body: JSON.stringify(deplacement),
       });
-  
+
       if (response.ok) {
-        // Vous pouvez traiter les données de réponse si nécessaire
-  
         console.log('Déplacement mis à jour avec succès.');
-        navigation.goBack(); // Retour à l'écran précédent après la mise à jour
+        navigation.goBack();
       } else {
         console.error('Échec de la mise à jour du déplacement.');
       }
@@ -64,10 +67,10 @@ const EditDeplacementsScreen = ({ route }) => {
       console.error('Erreur lors de la mise à jour du déplacement :', error);
     }
   };
-  
+
   useEffect(() => {
     getDeplacement();
-  }, []);
+  }, [deplacementId]);
 
   return (
     <ScrollView style={styles.container}>
@@ -79,29 +82,29 @@ const EditDeplacementsScreen = ({ route }) => {
           <Text style={styles.label}>Utilisateur ID</Text>
           <TextInput
             style={styles.input}
-            value={userId}
-            onChangeText={setUserId}
+            placeholder={deplacement.user_id.toString()}
+            onChangeText={(value) => handleInputChange('user_id', value)}
             keyboardType="numeric"
           />
           <Text style={styles.label}>Pays de départ</Text>
           <TextInput
             style={styles.input}
-            value={paysId}
-            onChangeText={setPaysId}
+            placeholder={deplacement.pays_id.toString()}
+            onChangeText={(value) => handleInputChange('pays_id', value)}
             keyboardType="numeric"
           />
           <Text style={styles.label}>Pays d'arrivée</Text>
           <TextInput
             style={styles.input}
-            value={paysId}
-            onChangeText={setPaysId2}
+            placeholder={deplacement.pays_id2.toString()}
+            onChangeText={(value) => handleInputChange('pays_id2', value)}
             keyboardType="numeric"
           />
           <Text style={styles.label}>Empreinte CO2</Text>
           <TextInput
             style={styles.input}
-            value={empreinteCO2}
-            onChangeText={setEmpreinteCO2}
+            placeholder={deplacement.empreinte_co2.toString()}
+            onChangeText={(value) => handleInputChange('empreinte_co2', value)}
             keyboardType="numeric"
           />
           <TouchableOpacity style={styles.button} onPress={handleUpdate}>
@@ -110,7 +113,7 @@ const EditDeplacementsScreen = ({ route }) => {
         </View>
       </View>
     </ScrollView>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({

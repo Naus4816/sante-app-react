@@ -1,38 +1,64 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
-const AddRecommandationScreen = () => {
-  const [titre, setTitre] = useState('');
+const AddRecommandationScreen = ({navigation}) => {
   const [contenu, setContenu] = useState('');
+  const [pays_id, setPaysId] = useState('');
+  const ip = "192.168.1.36";
+  const apiURL = `http://${ip}:8888/api`;
 
-  const handleSave = () => {
-    console.log('Enregistrer la recommandation');
+  const handleSave = async () => {
+    try {
+      const newRecommendation = {
+        contenu,
+        pays_id,
+      };
+  
+      const response = await fetch(`${apiURL}/recommandations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newRecommendation),
+      });
+  
+      if (response.ok) {
+        navigation.goBack();
+        console.log('Recommandation ajoutée avec succès.');
+      } else {
+        console.error('Échec de l\'ajout de la recommandation.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de la recommandation :', error);
+    }
   };
-
+  
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Ajouter une nouvelle recommandation</Text>
+      </View>
       <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardHeaderText}>Ajouter une Nouvelle Recommandation</Text>
-        </View>
         <View style={styles.cardBody}>
-          <TextInput 
-            style={styles.input} 
-            value={titre} 
-            onChangeText={setTitre} 
-            placeholder="Titre"
-          />
-          <TextInput 
-            style={[styles.input, styles.textArea]} 
-            value={contenu} 
-            onChangeText={setContenu} 
-            placeholder="Contenu"
-            multiline={true}
-            numberOfLines={4}
-          />
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>Enregistrer</Text>
-          </TouchableOpacity>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Contenu</Text>
+            <TextInput
+              style={styles.input}
+              value={contenu}
+              onChangeText={setContenu}
+              placeholder="Contenu"
+            />
+            <Text style={styles.label}>Pays recommandé</Text>
+            <TextInput
+              style={styles.input}
+              value={pays_id}
+              onChangeText={setPaysId}
+              placeholder="ID du pays"
+            />
+            <TouchableOpacity style={styles.button} onPress={handleSave}>
+              <Text style={styles.buttonText}>Enregistrer</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </ScrollView>
