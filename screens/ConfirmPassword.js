@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { apiURL } from '@env';
 
 const ConfirmPasswordScreen = () => {
   const [password, setPassword] = useState('');
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const handleSubmit = () => {
     // Ici, ajoutez votre logique pour la confirmation du mot de passe

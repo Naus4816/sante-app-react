@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { apiURL } from '@env';
 
 const AddRecommandationScreen = ({navigation}) => {
   const [contenu, setContenu] = useState('');
   const [pays_id, setPaysId] = useState('');
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const handleSave = async () => {
     try {

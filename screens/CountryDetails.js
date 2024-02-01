@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, StyleSheet, TextInput } from 'react-native';
 import AsyncStorage  from '@react-native-async-storage/async-storage';
+import { apiURL } from '@env';
 
 const CountryDetails = ({ route }) => {
   const { countryName } = route.params;
@@ -17,8 +18,6 @@ const CountryDetails = ({ route }) => {
 
   const [departureCountries, setDepartureCountries] = useState([]);
 
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const getStoredUserId = async () => {
     try {

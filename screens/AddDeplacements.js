@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { apiURL } from '@env';
 
 const AddDeplacementsScreen = ({navigation}) => {
   const [user_id, setUserId] = useState('');
   const [pays_id, setPaysId] = useState('');
   const [pays_id2, setPaysId2] = useState('');
   const [empreinte_co2, setEmpreinteCO2] = useState('');
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const handleSave = async () => {
     try {

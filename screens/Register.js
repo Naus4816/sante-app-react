@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, StyleSheet } from 'react-native';
+import { apiURL } from '@env';
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -7,8 +8,33 @@ const RegisterScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const ip="192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
+
+  const handleSendCode = async () => {
+    try {
+      const response = await fetch(`${apiURL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Gérer les erreurs venant de l'API
+        Alert.alert('Erreur', data.message || 'Quelque chose a mal tourné');
+      } else {
+        // Afficher un message de succès
+        Alert.alert('Succès', 'Un code vous a été envoyé pour vérifier votre adresse mail. Veuillez vérifier votre boite mail.');
+      }
+    } catch (error) {
+      // Gérer les erreurs de réseau / requête
+      Alert.alert('Erreur', 'Impossible de se connecter au serveur');
+    }
+  };
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -32,9 +58,9 @@ const RegisterScreen = ({ navigation }) => {
 
       const data = await response.json();
 
-      console.log(data);
       if (response.status === 201) {
-        navigation.navigate('Login');
+        Alert.alert('Succès', 'Un code vous a été envoyé pour vérifier votre adresse mail. Veuillez vérifier votre boite mail.');
+        navigation.navigate('VerifyMailCode', {email:email} );
       } else {
         // Gérer les erreurs de l'API
         setErrorMessage(data.message || 'Erreur lors de l’inscription');
@@ -84,8 +110,8 @@ const RegisterScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>S'inscrire</Text>
           </TouchableOpacity>
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-          <View style={styles.alreadyRegistered}>
-            <TouchableOpacity>
+          <View style={styles.alreadyRegistered} >
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={styles.alreadyRegisteredText}>
                 Déjà inscrit ? Connectez-vous
               </Text>

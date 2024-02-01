@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { apiURL } from '@env';
 
 const EditDeplacementsScreen = ({ route, navigation }) => {
   const deplacementId = route.params?.deplacementId || null;
@@ -19,8 +20,6 @@ const EditDeplacementsScreen = ({ route, navigation }) => {
     pays_id2: '',
     empreinte_co2: ''
   });
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const getDeplacement = async () => {
     try {

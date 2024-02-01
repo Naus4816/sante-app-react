@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { apiURL } from '@env';
 
 const EditRecommandationsScreen = ({ route, navigation }) => {
   const recommandationId = route.params?.recommandationId || null;
@@ -17,8 +18,6 @@ const EditRecommandationsScreen = ({ route, navigation }) => {
     contenu: '',
     pays_id: ''
     });
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const getRecommandation = async () => {
     try {

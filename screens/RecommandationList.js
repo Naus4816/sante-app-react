@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { apiURL } from '@env';
 
 const RecommandationsListScreen = ({ navigation }) => {
   const windowWidth = Dimensions.get('window').width;
   const [recommandations, setRecommandations] = useState([]);
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const getRecommandations = async () => {
     try {
@@ -49,9 +49,12 @@ const RecommandationsListScreen = ({ navigation }) => {
 
   const isSmallDevice = windowWidth < 768;
 
-  useEffect(() => {
-    getRecommandations();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getRecommandations();
+    }, [])
+  );
+
   return (
     <ScrollView style={styles.container}>
       <View style={[styles.header, isSmallDevice && styles.smallHeader]}>

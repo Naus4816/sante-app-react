@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { apiURL } from '@env';
 
 const DeplacementsListScreen = ({ navigation }) => {
   const windowWidth = Dimensions.get('window').width;
   const [deplacements, setDeplacements] = useState([]);
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const getDeplacements = async () => {
     try {
@@ -49,9 +49,12 @@ const DeplacementsListScreen = ({ navigation }) => {
 
   const isSmallDevice = windowWidth < 768;
 
-  useEffect(() => {
-    getDeplacements();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getDeplacements();
+    }, [])
+  );
+
   return (
     <ScrollView style={styles.container}>
       <View style={[styles.header, isSmallDevice && styles.smallHeader]}>

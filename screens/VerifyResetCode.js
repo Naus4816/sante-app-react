@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { apiURL } from '@env';
 
-const ForgotPassword = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+const VerifyResetCode = ({route, navigation}) => {
+  // Utilisation directe de la valeur du paramètre de route pour initialiser l'état de l'email
+  const initialEmail = route.params?.email || '';
+  const [email, setEmail] = useState(initialEmail);
+  const [resetCode, setResetCode] = useState('');
 
-  const handleSendCode = async () => {
+  const handleVerifyCode = async () => {
     try {
       const response = await fetch(apiURL, {
         method: 'POST',
@@ -14,6 +17,7 @@ const ForgotPassword = ({ navigation }) => {
         },
         body: JSON.stringify({
           email: email,
+          reset_code: resetCode,
         }),
       });
 
@@ -23,12 +27,11 @@ const ForgotPassword = ({ navigation }) => {
         // Gérer les erreurs venant de l'API
         Alert.alert('Erreur', data.message || 'Quelque chose a mal tourné');
       } else {
-        // Afficher un message de succès
-        Alert.alert('Succès', 'Le code a bien été envoyé. Veuillez vérifier votre boite mail.');
-        navigation.navigate('VerifyResetCode', {email:email} );
+        // Code vérifié avec succès
+        Alert.alert('Succès', 'Code de réinitialisation vérifié avec succès. Vous pouvez maintenant définir un nouveau mot de passe.');
+        navigation.navigate('ResetPassword', { email: email });
       }
     } catch (error) {
-      // Gérer les erreurs de réseau / requête
       Alert.alert('Erreur', 'Impossible de se connecter au serveur');
     }
   };
@@ -37,15 +40,9 @@ const ForgotPassword = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardHeaderText}>Réinitialisation du mot de passe</Text>
+          <Text style={styles.cardHeaderText}>Vérifier le code de réinitialisation</Text>
         </View>
         <View style={styles.cardBody}>
-          <Text style={styles.infoText}>
-            Vous avez oublié votre mot de passe ? Pas de problème. 
-            Indiquez-nous simplement votre adresse e-mail et nous vous enverrons un code 
-            de réinitialisation de mot de passe qui vous permettra d'en choisir un nouveau.
-          </Text>
-
           <TextInput
             style={styles.input}
             value={email}
@@ -53,25 +50,22 @@ const ForgotPassword = ({ navigation }) => {
             placeholder="E-mail"
             keyboardType="email-address"
           />
+          <TextInput
+            style={styles.input}
+            value={resetCode}
+            onChangeText={setResetCode}
+            placeholder="Code de réinitialisation"
+            keyboardType="number-pad"
+          />
 
-          <TouchableOpacity style={styles.button} onPress={handleSendCode}>
-            <Text style={styles.buttonText}>
-              Envoyer le lien de réinitialisation du mot de passe
-            </Text>
+          <TouchableOpacity style={styles.button} onPress={handleVerifyCode}>
+            <Text style={styles.buttonText}>Vérifier le code</Text>
           </TouchableOpacity>
-            <View style={styles.resetPassword}>
-              <TouchableOpacity onPress={() => navigation.navigate('VerifyResetCode')}>
-                <Text style={styles.resetPasswordText}>
-                  Vous avez déjà reçu un code ? Cliquez ici
-                </Text>
-              </TouchableOpacity>
-            </View>
         </View>
       </View>
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -101,10 +95,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 40,
   },
-  infoText: {
-    marginBottom: 20,
-    fontSize: 16,
-  },
   input: {
     borderWidth: 1,
     borderColor: '#ced4da',
@@ -123,13 +113,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  resetPassword: {
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  resetPasswordText: {
-    color: '#3490dc',
-  }
 });
 
-export default ForgotPassword;
+export default VerifyResetCode;

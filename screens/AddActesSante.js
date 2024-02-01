@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiURL } from '@env';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
 const AddActesSanteScreen = ({navigation}) => {
@@ -6,8 +7,6 @@ const AddActesSanteScreen = ({navigation}) => {
   const [description, setDescription] = useState('');
   const [prix, setPrix] = useState('');
   const [pays_id, setPays] = useState('');
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const handleSave = async () => {
     try {

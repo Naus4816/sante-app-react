@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import AsyncStorage  from '@react-native-async-storage/async-storage';
-import { clickProps } from 'react-native-web/dist/cjs/modules/forwardedProps';
+import { apiURL } from '@env';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [ userId,setUserId ] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const storeUserId = async (userId) => {
     try {
@@ -36,13 +34,21 @@ const LoginScreen = ({ navigation }) => {
       
       if (response.status === 200) {
         // Vérifier si l'utilisateur est un administrateur
-        if (data.is_admin) {
+        if (data.is_admin&&data.email_verified_at) {
           // Naviguer vers le tableau de bord administrateur
           navigation.navigate('AdminDashboard');
         } else {
           // Naviguer vers le tableau de bord utilisateur standard
-          storeUserId(data.id);
-          navigation.navigate('UserDashboard');
+          if(data.email_verified_at)
+          {
+            storeUserId(data.id);
+            navigation.navigate('UserDashboard');
+          }
+          else
+          {
+            Alert.alert("Vous n'avez pas encore valider votre compte! Vous allez être rediriger vers la page de vérification")
+            navigation.navigate('VerifyMailCode');
+          }
         }
       } else {
         // Si le statut n'est pas 200, on suppose qu'il y a une erreur de connexion
@@ -91,6 +97,13 @@ const LoginScreen = ({ navigation }) => {
               <TouchableOpacity style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Se connecter</Text>
               </TouchableOpacity>
+              <View style={styles.forgotPassword}>
+                <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                  <Text style={styles.forgotPasswordText}>
+                    Mot de passe oublié ? Cliquez ici
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -174,6 +187,13 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginBottom: 10,
+  },
+  forgotPassword: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  forgotPasswordText: {
+    color: '#3490dc',
   }
 });
 

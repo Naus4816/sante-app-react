@@ -1,16 +1,49 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { apiURL } from '@env';
 
-const ResetPasswordScreen = () => {
-  const [email, setEmail] = useState('');
+const ResetPasswordScreen = ({ route, navigation }) => {
+  const email = route.params?.email || null;
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
-  const handleResetPassword = () => {
-    // Logique de réinitialisation du mot de passe
+  const handleResetPassword = async () => {
+    // Vérification que les mots de passe correspondent
+    if (password !== confirmPassword) {
+      alert("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    
+    try {
+      // Envoi de la requête à l'API
+      const response = await fetch(`${apiURL}/password/new-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        // Gérer les erreurs venant de l'API
+        alert(data.message || 'Quelque chose a mal tourné');
+      } else {
+        // Mot de passe mis à jour avec succès
+        alert('Mot de passe mis à jour avec succès.');
+        // Vous pouvez ici rediriger l'utilisateur vers l'écran de connexion
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      // Gérer les erreurs de réseau / requête
+      alert("Impossible de se connecter au serveur");
+    }
   };
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -20,13 +53,6 @@ const ResetPasswordScreen = () => {
         </View>
         <View style={styles.cardBody}>
           {/* Formulaire */}
-          <TextInput
-            style={styles.input}
-            onChangeText={setEmail}
-            value={email}
-            placeholder="E-mail"
-            keyboardType="email-address"
-          />
           <TextInput
             style={styles.input}
             onChangeText={setPassword}

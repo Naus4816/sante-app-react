@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { apiURL } from '@env';
 
 const EditActeSantesScreen = ({ route, navigation }) => {
   const acteSanteId = route.params?.acteSanteId || null;
@@ -18,8 +19,6 @@ const EditActeSantesScreen = ({ route, navigation }) => {
     prix: '',
     pays_id: ''
   });
-  const ip = "192.168.1.36";
-  const apiURL = `http://${ip}:8888/api`;
 
   const getActeSante = async () => {
     try {
