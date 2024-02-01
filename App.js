@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet, View, Button, Image, TouchableOpacity } from 'react-native';
@@ -16,7 +16,6 @@ import CountryDetails from './screens/CountryDetails';
 import ConfirmPassword from './screens/ConfirmPassword';
 import ForgotPassword from './screens/ForgotPassword';
 import ResetPassword from './screens/ResetPassword';
-import EmailVerification from './screens/EmailVerification';
 import EditUserScreen from './screens/EditUser';
 import AddUserScreen from './screens/AddUser';
 import RecommandationListScreen from './screens/RecommandationList';
@@ -31,10 +30,13 @@ import AddDeplacementsScreen from './screens/AddDeplacements';
 import AddActesSanteScreen from './screens/AddActesSante';
 import EditPaysScreen from './screens/EditPays';
 import AddPaysScreen from './screens/AddPays';
+import VerifyResetCode from './screens/VerifyResetCode';
+import VerifyMailCode from './screens/VerifyMailCode';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
+
 
   const LogoHeader = ({ navigation }) => (
     <TouchableOpacity onPress={() => navigation.navigate('Welcome')}>
@@ -101,16 +103,17 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Welcome" component={Welcome}  options={({ navigation }) => headerUnauthenticated(navigation)} />
-        <Stack.Screen name="ActesSanteListScreen" component={ActesSanteListScreen} options={({ navigation }) => headerAdmin(navigation)}/>
-        <Stack.Screen name="DeplacementsList" component={DeplacementsListScreen} options={({ navigation }) => headerAdmin(navigation)}/>
         <Stack.Screen name="Login" component={Login} options={({ navigation }) => headerUnauthenticated(navigation)}/>
         <Stack.Screen name="Register" component={Register} options={({ navigation }) => headerUnauthenticated(navigation)}/>
-        <Stack.Screen name="UserDashboard" component={UserDashboard}  options={({ navigation }) => headerUser(navigation)} />
-        <Stack.Screen name="CountryDetails" component={CountryDetails}  options={({ navigation }) => headerUser(navigation)} />
-        <Stack.Screen name="EmailVerification" component={EmailVerification} options={({ navigation }) => headerUnauthenticated(navigation)} />
         <Stack.Screen name="ConfirmPassword" component={ConfirmPassword} options={({ navigation }) => headerUnauthenticated(navigation)}/>
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={({ navigation }) => headerUnauthenticated(navigation)}/>
         <Stack.Screen name="ResetPassword" component={ResetPassword} options={({ navigation }) => headerUnauthenticated(navigation)}/>
+        <Stack.Screen name="VerifyResetCode" component={VerifyResetCode} options={({navigation}) => headerUnauthenticated(navigation)}/>
+        <Stack.Screen name="VerifyMailCode" component={VerifyMailCode} options={({navigation}) => headerUnauthenticated(navigation)}/>
+        <Stack.Screen name="UserDashboard" component={UserDashboard}  options={({ navigation }) => headerUser(navigation)} />
+        <Stack.Screen name="CountryDetails" component={CountryDetails}  options={({ navigation }) => headerUser(navigation)} />
+        <Stack.Screen name="ActesSanteList" component={ActesSanteListScreen} options={({ navigation }) => headerAdmin(navigation)}/>
+        <Stack.Screen name="DeplacementsList" component={DeplacementsListScreen} options={({ navigation }) => headerAdmin(navigation)}/>
         <Stack.Screen name="AdminDashboard" component={AdminDashboard} options={({ navigation }) => headerAdmin(navigation)}/>
         <Stack.Screen name="UserList" component={UserList} options={({ navigation }) => headerAdmin(navigation)}/>
         <Stack.Screen name="AddUser" component={AddUserScreen} options={({ navigation }) => headerAdmin(navigation)}/>

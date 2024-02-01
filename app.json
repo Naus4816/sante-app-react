@@ -2,6 +2,7 @@
   "expo": {
     "name": "sante-app-react",
     "slug": "sante-app-react",
+    "scheme": "sante-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
