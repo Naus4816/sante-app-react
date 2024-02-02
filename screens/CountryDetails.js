@@ -297,9 +297,11 @@ const CountryDetails = ({ route }) => {
             {recommendations.map((recommendation) => (
               <View key={recommendation.id} style={styles.recommendationCard}>
                 <Text>{recommendation.text}</Text>
+                {recommendation.id !== userId &&(
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteRecommendation(recommendation.id)}>
                   <Text style={styles.deleteButtonText}>Supprimer</Text>
                 </TouchableOpacity>
+                )}
               </View>
             ))}
 
