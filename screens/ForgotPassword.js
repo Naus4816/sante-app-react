@@ -7,7 +7,7 @@ const ForgotPassword = ({ navigation }) => {
 
   const handleSendCode = async () => {
     try {
-      const response = await fetch(apiURL, {
+      const response = await fetch(`${apiURL}/password/send-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
