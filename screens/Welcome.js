@@ -14,9 +14,6 @@ const WelcomeScreen = () => {
         <Text style={styles.jumbotronSubtitle}>Votre guide global pour le coût des soins de santé et le tourisme médical.</Text>
         <View style={styles.separator} />
         <Text style={styles.jumbotronText}>Explorez les coûts des soins de santé à l'échelle mondiale et prenez des décisions éclairées concernant votre santé.</Text>
-        <TouchableOpacity style={styles.jumbotronButton}>
-          <Text style={styles.jumbotronButtonText}>En savoir plus</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Features */}
