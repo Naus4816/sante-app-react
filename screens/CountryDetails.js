@@ -112,8 +112,7 @@ const CountryDetails = ({ route }) => {
     getCountriesByName();
     (async () => {
       try {
-        setUserId ( await getStoredUserId()); // Attendez que la promesse soit résolue
-        console.log(userId); // Maintenant, cela devrait correctement afficher la valeur de userId
+        setUserId ( await getStoredUserId()); 
       } catch (error) {
         console.error('Erreur lors de la récupération de l\'ID de l\'utilisateur:', error);
       }
@@ -124,8 +123,7 @@ const CountryDetails = ({ route }) => {
     try {
       (async () => {
         try {
-          const userId = await getStoredUserId(); // Attendez que la promesse soit résolue
-          console.log(userId); // Maintenant, cela devrait correctement afficher la valeur de userId
+          const userId = await getStoredUserId();
         } catch (error) {
           console.error('Erreur lors de la récupération de l\'ID de l\'utilisateur:', error);
         }
