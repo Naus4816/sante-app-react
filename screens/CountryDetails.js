@@ -11,13 +11,11 @@ const CountryDetails = ({ route }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [newRecommendation, setNewRecommendation] = useState('');
   const [paysId, setPaysId] = useState('');
+  const [userId, setUserId] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [distance, setDistance] = useState(null);
   const [carbonFootprint, setCarbonFootprint] = useState(null);
-
-
   const [departureCountries, setDepartureCountries] = useState([]);
-
 
   const getStoredUserId = async () => {
     try {
@@ -28,7 +26,6 @@ const CountryDetails = ({ route }) => {
       return null;
     }
   };
-  
   
   const getActesSante = async () => {
     try {
@@ -113,11 +110,26 @@ const CountryDetails = ({ route }) => {
   useEffect(() => {
     getActesSante();
     getCountriesByName();
+    (async () => {
+      try {
+        setUserId ( await getStoredUserId()); // Attendez que la promesse soit résolue
+        console.log(userId); // Maintenant, cela devrait correctement afficher la valeur de userId
+      } catch (error) {
+        console.error('Erreur lors de la récupération de l\'ID de l\'utilisateur:', error);
+      }
+    })();  
   }, []);
 
   const addTrajet = async (paysId, selectedCountryId, carbonFootprint) => {
     try {
-      const userId = await getStoredUserId();
+      (async () => {
+        try {
+          const userId = await getStoredUserId(); // Attendez que la promesse soit résolue
+          console.log(userId); // Maintenant, cela devrait correctement afficher la valeur de userId
+        } catch (error) {
+          console.error('Erreur lors de la récupération de l\'ID de l\'utilisateur:', error);
+        }
+      })();    
       
       const requestData = {
         user_id: userId,
@@ -219,7 +231,7 @@ const CountryDetails = ({ route }) => {
         try {
           const response = await fetch(url);
           const data = await response.json();
-          
+          console.log(data);
           if (data.status === 'OK') {
             const location = data.results[0].geometry.location;
             return { latitude: location.lat, longitude: location.lng };
